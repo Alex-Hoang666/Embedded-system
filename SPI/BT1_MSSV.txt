@@ -1,0 +1,48 @@
+//import thư viện
+#include <wiringPi.h>                           //thư viện wiringPi 
+#include <wiringPiSPI.h>                        //thư viện SPI trong wiringPi 
+#include <stdio.h>                              //
+#include <stdint.h>                             //
+
+//define chân
+#define spi0    0                               // define chân 0 là chân spi
+
+//tạo các hàm và các biến
+unsigned char data[2];                          // tạo một char có 2 mảng data 
+uint8_t mssv[8] = {2,0,1,4,6,5,6,7};            //tạo một mảng 8 bit gồm 8 phần tử là mã số sinh viên
+
+
+//hàm con truyền data
+void send_data(unsigned char address, unsigned char value)   // hàm gửi dữ liệu đến các vị trí cần 
+{
+    data[0]= address;
+    data[1]= value;
+    wiringPiSPIDataRW(spi0, data, 2);                        // hiện ra dữ liệu đã gửi
+}
+
+
+//hàm con cấu hình cho con Max7219
+void initMax7219(void){
+    // set decode mode: 0x09FF              // cấu hình decode mode có 4 trạng thái [00;0f;f0,ff]. trong đó ff là on toàn bộ- đọc dữ liệu 
+    send_data(0x09, 0xff);                  // số- khi tắt hết(00), muốn hiện gì phải chuyển nó qua mã HEX ex: 0x3D
+    // set intensity: 0x0A09                //
+    send_data(0x0A, 9);
+    // set scanlimit                        // chọn số ô(đèn) sử dụng
+    send_data(0x0B, 7);                     // ở đây là chọn đèn từ 0-8
+    // no shutdown, turn off display test   //
+    send_data(0x0C, 1);
+    send_data(0x0F, 0);
+}
+
+
+//chương trình chính
+int main (void){
+    // setup SPI interface                 //setup cho SPI và cấp xung max cho nó là 100000
+    wiringPiSPISetup(spi0, 10000000);
+    initMax7219();                         // gọi ra hàm con cấu hình Max7291 initMax7219
+    for(int i=0;i<8;i++){                  // tạo một vòng lặp for để liên tục gửi giá trịn về con Max
+        send_data(i+1, mssv[7-i]);         // gọi ra hàm con send_data với (<vị trí>, <giá trị cần gửi>)
+    }
+  
+    return 0;                              // kết thúc chương trình và reset
+}
