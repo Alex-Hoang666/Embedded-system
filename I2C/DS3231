@@ -1,0 +1,23 @@
+//Ví dụ với modun thời gian thực:
+#include <wiringPi.h>
+#include <wirinngPiI2C.h>
+
+int main (void)
+{
+//setup giao tiếp với thiết bị I2C
+int rt=wiringPiI2CSetup(0x68);        // khai báo một con readtime với địa chỉ giao tiếp I2C là bit 0x60
+// set gio ban dau cho DS3231
+int hh, mm,ss;
+hh=0x62;
+mm=0x49;
+ss=0x26;
+// gởi data xuống thanh ghi (<tên thiết bị giao tiếp>,<tên thanh ghi>,<data cần gửi>)
+wiringPiI2CWriteReg8(ds,0x00,ss);     // giây
+wiringPI2CWriteReg8(ds,0x01,mm);      //phut
+wiringPI2CWriteReg8(ds,0x02,hh);      //gio
+//
+// đọc dữ liệu
+//
+unsigned char data;                        // tạo một mảng dữ liệu từ con readtime
+data =0x60;
+}
