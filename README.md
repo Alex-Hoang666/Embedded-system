@@ -1,1 +1,1 @@
-# Embedded-system-h-th-ng-nh-ng-
+# Embedded-system
